@@ -1,0 +1,43 @@
+{
+    "name": "okoshki-server",
+    "version": "0.0.1",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon src/index.js",
+        "deploy": "NODE_ENV=production pm2 start --attach src/index.js",
+        "build": "npx prisma migrate dev && npx prisma generate",
+        "generate": "node generate.js"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "gql-generator": "^1.0.19",
+        "nodemon": "^3.0.1",
+        "prisma": "^5.5.2"
+    },
+    "dependencies": {
+        "@apollo/server": "^4.9.5",
+        "@apollo/server-plugin-landing-page-graphql-playground": "^4.0.1",
+        "@graphql-tools/merge": "^9.0.0",
+        "@graphql-tools/schema": "^10.0.0",
+        "@paljs/generator": "^6.0.7",
+        "@paljs/plugins": "^6.0.7",
+        "@paljs/schema": "^6.0.7",
+        "@prisma/client": "^5.5.2",
+        "axios": "^1.6.2",
+        "bcryptjs": "^2.4.3",
+        "dotenv": "^16.4.7",
+        "expo-server-sdk": "^3.7.0",
+        "graphql": "^16.8.1",
+        "graphql-middleware": "^6.1.35",
+        "graphql-tag": "^2.12.6",
+        "graphql-upload": "^13.0.0",
+        "jsonwebtoken": "^9.0.1",
+        "multer": "^1.4.5-lts.1",
+        "nanoid": "3.3.5",
+        "nodemailer": "^6.9.8",
+        "sharp": "^0.32.6",
+        "shortid": "^2.2.16"
+    }
+}

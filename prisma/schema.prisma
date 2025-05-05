@@ -1,0 +1,140 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    phone     String    @unique
+    code      String    @default("0000")
+    name      String?
+    pushId    String?
+    requests  Request[]
+    sender    Message[] @relation("sender")
+    receiver  Message[] @relation("reciever")
+}
+
+model Admin {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    login     String   @unique
+    password  String
+}
+
+model Company {
+    id          String     @id @default(cuid())
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    email       String     @unique
+    phone       String?
+    whatsapp    String?
+    password    String
+    repassword  String?
+    name        String
+    description String
+    city        String     @default("якутск")
+    location    String?
+    address     String?
+    avatar      String?
+    images      String[]
+    requests    Request[]
+    services    Service[]
+    masters     Master[]
+    schedules   Schedule[]
+}
+
+model Master {
+    id          String     @id @default(cuid())
+    createdAt   DateTime   @default(now())
+    updatedAt   DateTime   @updatedAt
+    name        String
+    description String
+    image       String
+    company     Company?   @relation(fields: [companyId], references: [id])
+    companyId   String?
+    request     Request[]
+    schedules   Schedule[]
+}
+
+model Service {
+    id         String     @id @default(cuid())
+    createdAt  DateTime   @default(now())
+    updatedAt  DateTime   @updatedAt
+    name       String?
+    price      Int
+    schedules  Schedule[]
+    company    Company?   @relation(fields: [companyId], references: [id])
+    companyId  String?
+    category   Category?  @relation(fields: [categoryId], references: [id])
+    categoryId String?
+}
+
+model Schedule {
+    id        String    @id @default(cuid())
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    week      String[]
+    times     String[]
+    services  Service[]
+    masters   Master[]
+    company   Company?  @relation(fields: [companyId], references: [id])
+    companyId String?
+}
+
+model Request {
+    id         String    @id @default(cuid())
+    createdAt  DateTime  @default(now())
+    updatedAt  DateTime  @updatedAt
+    date       String
+    times      String[]
+    price      Int?
+    status     String    @default("0")
+    rating     Int       @default(0)
+    review     String?
+    code       String    @default("0000")
+    company    Company?  @relation(fields: [companyId], references: [id])
+    companyId  String?
+    user       User?     @relation(fields: [userId], references: [id])
+    userId     String?
+    master     Master?   @relation(fields: [masterId], references: [id])
+    masterId   String?
+    category   Category? @relation(fields: [categoryId], references: [id])
+    categoryId String?
+}
+
+model Category {
+    id          String    @id @default(cuid())
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    name        String
+    subcategory String?
+    services    Service[]
+    requests    Request[]
+}
+
+model Promotion {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    text      String
+    image     String
+}
+
+model Message {
+    id          String   @id @default(cuid())
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+    text        String 
+    sender      User     @relation("sender", fields: [senderId], references: [id])
+    senderId    String
+    reciever    User     @relation("reciever", fields: [recieverId], references: [id])
+    recieverId  String
+}
