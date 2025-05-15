@@ -1,7 +1,43 @@
 const { Expo } = require('expo-server-sdk');
-const expo = new Expo();
-const prisma = require('../../prisma');
+const prisma = require('../../../prisma');
+const LocalQueue = require('./queue');
+const rateLimiter = require('../../utils/rateLimiter');
 
+const expo = new Expo();
+const notificationQueue = new LocalQueue(async (task) => {
+  try {
+    await expo.sendPushNotificationsAsync([{
+      to: task.pushToken,
+      sound: 'default',
+      title: 'Новое сообщение',
+      body: task.content
+    }]);
+
+    await prisma.message.update({
+      where: { id: task.messageId },
+      data: { deliveryStatus: 'DELIVERED' }
+    });
+  } catch (error) {
+    await prisma.message.update({
+      where: { id: task.messageId },
+      data: { 
+        deliveryStatus: 'FAILED',
+        attempts: { increment: 1 }
+      }
+    });
+    throw error;
+  }
+});
+
+async function sendNotification(messageId, pushToken, content) {
+  if (!rateLimiter.check(pushToken)) return;
+
+  await notificationQueue.add('notification', {
+    messageId,
+    pushToken,
+    content
+  });
+}
 /**
  * Отправка сообщения с проверкой лимитов
  * @param {string} userId - ID отправителя
@@ -41,4 +77,9 @@ async function sendChatMessage(userId, chatId, content) {
   }
 
   return message;
+}
+
+module.exports = {
+  sendChatMessage,
+  sendNotification
 }

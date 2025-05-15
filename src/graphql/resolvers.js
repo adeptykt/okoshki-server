@@ -7,6 +7,7 @@ const { Master } = require('./Master/resolvers')
 const { Company } = require('./Company/resolvers')
 const { Admin } = require('./Admin/resolvers')
 const { User } = require('./User/resolvers')
+const { Chat } = require('./Chat/resolvers')
 
 const resolvers = [
   User,
@@ -18,6 +19,7 @@ const resolvers = [
   Schedule,
   Service,
   Category,
+  Chat
 ]
 
 module.exports = { resolvers }
